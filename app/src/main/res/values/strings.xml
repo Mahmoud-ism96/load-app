@@ -23,5 +23,9 @@
     <string name="title_activity_detail">DetailActivity</string>
     <string name="file_name_title">File Name:</string>
     <string name="status_title">Status:</string>
-    <string name="ok_button">Ok</string>
+    <string name="ok_button">OK</string>
+
+    <string name="download_success">Success</string>
+    <string name="download_failed">Failed</string>
+
 </resources>

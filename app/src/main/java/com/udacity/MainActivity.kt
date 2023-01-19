@@ -10,7 +10,6 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -28,6 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     private var buttonPosition: Int = 0
     private var selectedPosition: Int = 0
+    private lateinit var status : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,16 +69,19 @@ class MainActivity : AppCompatActivity() {
             val query = DownloadManager.Query()
             val c = downloadManager.query(query)
 
-            if(c.moveToFirst())
-            Log.i("MainActivity","Queue:"+c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS)))
-
+            if(c.moveToFirst()){
+                status = when(c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS))){
+                    DownloadManager.STATUS_SUCCESSFUL-> resources.getString(R.string.download_success)
+                    else -> resources.getString(R.string.download_failed)
+                }
+            }
 
             if (downloadID == id) {
                 custom_button.completeLoading()
                 when (selectedPosition) {
-                    0 -> sendNotification(getString(R.string.glide_title), "Success")
-                    1 -> sendNotification(getString(R.string.loadapp_title), "Success")
-                    2 -> sendNotification(getString(R.string.retrofit_title), "Success")
+                    0 -> sendNotification(getString(R.string.glide_title), status)
+                    1 -> sendNotification(getString(R.string.loadapp_title), status)
+                    2 -> sendNotification(getString(R.string.retrofit_title), status)
                 }
             }
         }
