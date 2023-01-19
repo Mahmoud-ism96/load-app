@@ -6,6 +6,8 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.animation.doOnEnd
+import androidx.core.animation.doOnStart
 import androidx.core.content.withStyledAttributes
 import kotlin.properties.Delegates
 
@@ -22,7 +24,22 @@ class LoadingButton @JvmOverloads constructor(
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
         when (new) {
             ButtonState.Loading -> {
-                buttonColor = resources.getColor(R.color.colorAccent)
+                ValueAnimator.ofInt(0, 1000).apply {
+                    addUpdateListener {
+                        invalidate()
+                    }
+                    duration = 3000
+                    doOnStart {
+                        isEnabled = false
+                        text = resources.getString(R.string.button_loading)
+                        buttonColor = resources.getColor(R.color.colorAccent)
+                        invalidate()
+                    }
+                    doOnEnd {
+                        buttonState = ButtonState.Completed
+                    }
+                    start()
+                }
             }
             ButtonState.Clicked -> {
                 buttonState = ButtonState.Loading
@@ -30,9 +47,11 @@ class LoadingButton @JvmOverloads constructor(
             }
             ButtonState.Completed -> {
                 isEnabled = true
+                text = resources.getString(R.string.button_name)
+                buttonColor = resources.getColor(R.color.colorPrimary)
+                invalidate()
             }
         }
-        invalidate()
     }
 
     private val paint = Paint().apply {
@@ -47,7 +66,7 @@ class LoadingButton @JvmOverloads constructor(
         isClickable = true
         context.withStyledAttributes(attrs, R.styleable.LoadingButton) {
             buttonColor = getColor(
-                R.styleable.LoadingButton_buttonColor, resources.getColor(R.color.colorPrimary)
+                R.styleable.LoadingButton_buttonColor, 0
             )
             text = getString(R.styleable.LoadingButton_text).toString()
         }
@@ -59,18 +78,14 @@ class LoadingButton @JvmOverloads constructor(
 
         val textXPos = (canvas?.width)?.div(2)
         val textYPos = ((canvas?.height)?.div(2)?.minus((paint.descent() + paint.ascent()) / 2))
-
         canvas?.drawColor(buttonColor)
         canvas?.drawText(
             text, textXPos!!.toFloat(), textYPos!!.toFloat(), paint
         )
-
     }
 
     override fun performClick(): Boolean {
-        if (super.performClick()) return true
-
-        invalidate()
+        buttonState = ButtonState.Clicked
         return true
     }
 
