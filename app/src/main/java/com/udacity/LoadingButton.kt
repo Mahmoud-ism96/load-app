@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.animation.doOnEnd
@@ -21,6 +22,9 @@ class LoadingButton @JvmOverloads constructor(
     private var loadingColor = 0
     private var circleColor = 0
 
+    private var arcProgress : Int = 0
+    private var loadingArc = RectF()
+
     private val valueAnimator = ValueAnimator()
 
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
@@ -28,14 +32,18 @@ class LoadingButton @JvmOverloads constructor(
             ButtonState.Loading -> {
                 ValueAnimator.ofInt(0, 1000).apply {
                     duration = 3000
+                    addUpdateListener { valueAnimator ->
+                        arcProgress = valueAnimator.animatedValue as Int
+                        invalidate()
+                    }
                     doOnStart {
                         isEnabled = false
                         text = resources.getString(R.string.button_loading)
-                        buttonColor = resources.getColor(R.color.colorAccent)
                         invalidate()
                     }
                     doOnEnd {
                         buttonState = ButtonState.Completed
+                        arcProgress = 0
                     }
                     start()
                 }
@@ -47,7 +55,6 @@ class LoadingButton @JvmOverloads constructor(
             ButtonState.Completed -> {
                 isEnabled = true
                 text = resources.getString(R.string.button_name)
-                buttonColor = resources.getColor(R.color.colorPrimary)
                 invalidate()
             }
         }
@@ -58,6 +65,11 @@ class LoadingButton @JvmOverloads constructor(
         strokeWidth = resources.getDimension(R.dimen.strokeWidth)
         textSize = resources.getDimension(R.dimen.default_text_size)
         textAlign = Paint.Align.CENTER
+    }
+
+    private val arcPaint = Paint().apply {
+        style = Paint.Style.FILL
+        isAntiAlias = true
     }
 
 
@@ -82,6 +94,14 @@ class LoadingButton @JvmOverloads constructor(
             text, textXPos!!.toFloat(), textYPos!!.toFloat(), paint
         )
 
+        arcPaint.color = resources.getColor(R.color.colorAccent)
+        val sweepAngle = arcProgress / 995f * 360f
+        canvas?.drawArc(loadingArc,
+            0f,
+            sweepAngle,
+            true,
+            arcPaint)
+
 
     }
 
@@ -100,6 +120,8 @@ class LoadingButton @JvmOverloads constructor(
         widthSize = w
         heightSize = h
         setMeasuredDimension(w, h)
+
+        loadingArc = RectF(widthSize *0.75f -30f, heightSize /2 -30f, widthSize *0.75f +30f , heightSize /2 +30f)
     }
 
 
