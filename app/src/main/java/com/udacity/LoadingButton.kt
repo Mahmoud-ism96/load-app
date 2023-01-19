@@ -19,10 +19,11 @@ class LoadingButton @JvmOverloads constructor(
     private var heightSize = 0
     private var buttonColor = 0
     private var text = ""
+    private var textColor = 0
     private var loadingColor = 0
     private var circleColor = 0
 
-    private var arcProgress : Int = 0
+    private var loadingProgress: Int = 0
     private var loadingArc = RectF()
 
     private val valueAnimator = ValueAnimator()
@@ -31,9 +32,9 @@ class LoadingButton @JvmOverloads constructor(
         when (new) {
             ButtonState.Loading -> {
                 ValueAnimator.ofInt(0, 1000).apply {
-                    duration = 3000
+                    duration = 5000
                     addUpdateListener { valueAnimator ->
-                        arcProgress = valueAnimator.animatedValue as Int
+                        loadingProgress = valueAnimator.animatedValue as Int
                         invalidate()
                     }
                     doOnStart {
@@ -43,7 +44,7 @@ class LoadingButton @JvmOverloads constructor(
                     }
                     doOnEnd {
                         buttonState = ButtonState.Completed
-                        arcProgress = 0
+                        loadingProgress = 0
                     }
                     start()
                 }
@@ -67,40 +68,43 @@ class LoadingButton @JvmOverloads constructor(
         textAlign = Paint.Align.CENTER
     }
 
-    private val arcPaint = Paint().apply {
-        style = Paint.Style.FILL
-        isAntiAlias = true
-    }
-
-
     init {
         isClickable = true
         context.withStyledAttributes(attrs, R.styleable.LoadingButton) {
             buttonColor = getColor(R.styleable.LoadingButton_buttonColor, 0)
             text = getString(R.styleable.LoadingButton_text).toString()
+            textColor = getColor(R.styleable.LoadingButton_textColor, 0)
             loadingColor = getColor(R.styleable.LoadingButton_loadingColor, 0)
             circleColor = getColor(R.styleable.LoadingButton_circleColor, 0)
         }
     }
 
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        val textXPos = (canvas?.width)?.div(2)
-        val textYPos = ((canvas?.height)?.div(2)?.minus((paint.descent() + paint.ascent()) / 2))
-        canvas?.drawColor(buttonColor)
-        canvas?.drawText(
-            text, textXPos!!.toFloat(), textYPos!!.toFloat(), paint
+        val textXPos = (canvas.width).div(2f)
+        val textYPos = ((canvas.height).div(2).minus((this.paint.descent() + this.paint.ascent()) / 2))
+        canvas.drawColor(buttonColor)
+
+        this.paint.color = loadingColor
+        val progressRect = loadingProgress / 1000f * widthSize
+        canvas.drawRect(0f, 0f, progressRect, heightSize.toFloat(), this.paint)
+
+        this.paint.color = textColor
+        canvas.drawText(
+            text, textXPos, textYPos, this.paint
         )
 
-        arcPaint.color = resources.getColor(R.color.colorAccent)
-        val sweepAngle = arcProgress / 995f * 360f
-        canvas?.drawArc(loadingArc,
+        this.paint.color = circleColor
+        val sweepAngle = loadingProgress / 1000f * 360f
+        canvas.drawArc(
+            loadingArc,
             0f,
             sweepAngle,
             true,
-            arcPaint)
+            this.paint
+        )
 
 
     }
@@ -121,7 +125,12 @@ class LoadingButton @JvmOverloads constructor(
         heightSize = h
         setMeasuredDimension(w, h)
 
-        loadingArc = RectF(widthSize *0.75f -30f, heightSize /2 -30f, widthSize *0.75f +30f , heightSize /2 +30f)
+        loadingArc = RectF(
+            widthSize * 0.75f - 30f,
+            heightSize / 2 - 30f,
+            widthSize * 0.75f + 30f,
+            heightSize / 2 + 30f
+        )
     }
 
 

@@ -15,12 +15,13 @@
         android:layout_height="60dp"
         android:layout_margin="20dp"
         app:buttonColor="@color/colorPrimary"
-        app:circleColor="@color/white"
+        app:circleColor="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:loadingColor="@color/white"
-        app:text="@string/button_name" />
+        app:loadingColor="@color/colorPrimaryDark"
+        app:text="@string/button_name"
+        app:textColor="@color/white" />
 
     <ImageView
         android:id="@+id/download_image"
