@@ -68,11 +68,15 @@ class MainActivity : AppCompatActivity() {
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+
+            if (downloadID == id) {
+                Log.i("MainActivity","Download ID: "+id)
+                custom_button.completeLoading()
+            }
         }
     }
 
     private fun download(URL: String) {
-        Log.i("MainActivity", "" + URL)
         val request = DownloadManager.Request(Uri.parse(URL)).setTitle(getString(R.string.app_name))
             .setDescription(getString(R.string.app_description)).setRequiresCharging(false)
             .setAllowedOverMetered(true).setAllowedOverRoaming(true)

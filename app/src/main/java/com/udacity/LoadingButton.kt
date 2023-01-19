@@ -39,7 +39,7 @@ class LoadingButton @JvmOverloads constructor(
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
         when (new) {
             ButtonState.Loading -> {
-                valueAnimator.duration = 5000
+                valueAnimator.duration = 30000
                 valueAnimator.addUpdateListener { valueAnimator ->
                     loadingProgress = valueAnimator.animatedValue as Int
                     invalidate()
@@ -137,6 +137,14 @@ class LoadingButton @JvmOverloads constructor(
             widthSize * 0.75f + 30f,
             heightSize / 2 + 30f
         )
+    }
+
+    fun completeLoading() {
+        val currentAnimatedFraction = valueAnimator.animatedFraction
+        valueAnimator.cancel()
+        valueAnimator.setCurrentFraction(currentAnimatedFraction)
+        valueAnimator.duration = 950
+        valueAnimator.start()
     }
 
 
