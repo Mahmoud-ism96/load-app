@@ -8,11 +8,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.RadioGroup
 import android.widget.Toast
@@ -41,13 +39,8 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         createChannel(
-            getString(R.string.loadapp_channel_id),
-            getString(R.string.loadapp_channel_name)
+            getString(R.string.loadapp_channel_id), getString(R.string.loadapp_channel_name)
         )
-
-        notificationManager = ContextCompat.getSystemService(
-            this, NotificationManager::class.java
-        ) as NotificationManager
 
         radioGroup = findViewById<RadioGroup>(R.id.radio_group)
 
@@ -79,9 +72,12 @@ class MainActivity : AppCompatActivity() {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
 
             if (downloadID == id) {
-                Log.i("MainActivity", "Download ID: " + id)
                 custom_button.completeLoading()
-                sendNotification()
+                when (buttonPosition) {
+                    0 -> sendNotification(getString(R.string.glide_title), "Success")
+                    1 -> sendNotification(getString(R.string.loadapp_title), "Success")
+                    2 -> sendNotification(getString(R.string.retrofit_title), "Success")
+                }
             }
         }
     }
@@ -113,12 +109,8 @@ class MainActivity : AppCompatActivity() {
     private fun createChannel(channelId: String, channelName: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
-                channelId,
-                channelName,
-                NotificationManager.IMPORTANCE_DEFAULT
+                channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT
             )
-            notificationChannel.enableLights(true)
-            notificationChannel.lightColor = Color.RED
             notificationChannel.enableVibration(true)
             notificationChannel.description = resources.getString(R.string.notification_description)
 
@@ -129,9 +121,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendNotification() {
+    private fun sendNotification(fileName: String, status: String) {
+        notificationManager = ContextCompat.getSystemService(
+            this, NotificationManager::class.java
+        ) as NotificationManager
+        notificationManager.cancelAll()
         notificationManager.sendNotification(
-            this.getText(R.string.notification_description).toString(), this
+            this.getText(R.string.notification_description).toString(), this, fileName, status
         )
     }
 }
