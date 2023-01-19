@@ -1,6 +1,8 @@
 package com.udacity
 
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
+import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -9,7 +11,9 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
+import androidx.core.content.ContextCompat
 import androidx.core.content.withStyledAttributes
+import com.udacity.util.sendNotification
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
@@ -26,25 +30,32 @@ class LoadingButton @JvmOverloads constructor(
     private var loadingProgress: Int = 0
     private var loadingArc = RectF()
 
-    private val valueAnimator = ValueAnimator.ofInt(0,1000)
+    private val valueAnimator = ValueAnimator.ofInt(0, 1000)
+
+    val notificationManager = ContextCompat.getSystemService(
+        context, NotificationManager::class.java
+    ) as NotificationManager
 
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
         when (new) {
             ButtonState.Loading -> {
                 valueAnimator.duration = 5000
                 valueAnimator.addUpdateListener { valueAnimator ->
-                        loadingProgress = valueAnimator.animatedValue as Int
-                        invalidate()
-                    }
+                    loadingProgress = valueAnimator.animatedValue as Int
+                    invalidate()
+                }
                 valueAnimator.doOnStart {
-                        isEnabled = false
-                        text = resources.getString(R.string.button_loading)
-                        invalidate()
-                    }
+                    isEnabled = false
+                    text = resources.getString(R.string.button_loading)
+                    invalidate()
+                }
                 valueAnimator.doOnEnd {
-                        buttonState = ButtonState.Completed
-                        loadingProgress = 0
-                    }
+                    buttonState = ButtonState.Completed
+                    loadingProgress = 0
+                    notificationManager.sendNotification(
+                        context.getText(R.string.notification_description).toString(), context
+                    )
+                }
                 valueAnimator.start()
             }
             ButtonState.Clicked -> {
@@ -81,8 +92,9 @@ class LoadingButton @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        val textXPos = (canvas.width).div(2f)
-        val textYPos = ((canvas.height).div(2).minus((this.paint.descent() + this.paint.ascent()) / 2))
+        val textXPos = (width).div(2f)
+        val textYPos =
+            ((height).div(2).minus((this.paint.descent() + this.paint.ascent()) / 2))
         canvas.drawColor(buttonColor)
 
         this.paint.color = loadingColor
@@ -97,11 +109,7 @@ class LoadingButton @JvmOverloads constructor(
         this.paint.color = circleColor
         val sweepAngle = loadingProgress / 1000f * 360f
         canvas.drawArc(
-            loadingArc,
-            0f,
-            sweepAngle,
-            true,
-            this.paint
+            loadingArc, 0f, sweepAngle, true, this.paint
         )
 
 
@@ -112,6 +120,7 @@ class LoadingButton @JvmOverloads constructor(
     }
 
 
+    @SuppressLint("DrawAllocation")
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val minw: Int = paddingLeft + paddingRight + suggestedMinimumWidth
         val w: Int = resolveSizeAndState(minw, widthMeasureSpec, 1)

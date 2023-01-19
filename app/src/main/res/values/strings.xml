@@ -16,5 +16,8 @@
     <string name="button_loading">We are loading!!</string>
     <string name="noSelectionToast">Please select the file to download</string>
 
+    <string name="loadapp_channel_name">Download</string>
+    <string name="loadapp_channel_id">0</string>
+
     <string name="title_activity_detail">DetailActivity</string>
 </resources>
