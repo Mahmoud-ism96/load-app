@@ -107,9 +107,8 @@ class LoadingButton @JvmOverloads constructor(
 
     }
 
-    override fun performClick(): Boolean {
+    fun buttonClicked() {
         buttonState = ButtonState.Clicked
-        return true
     }
 
 
