@@ -12,7 +12,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -29,7 +28,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
     private lateinit var action: NotificationCompat.Action
-    private lateinit var radioGroup: RadioGroup
 
     private var buttonPosition: Int = 0
 
@@ -42,18 +40,15 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.loadapp_channel_id), getString(R.string.loadapp_channel_name)
         )
 
-        radioGroup = findViewById<RadioGroup>(R.id.radio_group)
-
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
-        radioGroup.setOnCheckedChangeListener { rGroup, checkedId ->
-            val radioBtnID = rGroup.checkedRadioButtonId
-            val radioB: View = rGroup.findViewById(radioBtnID)
+        radio_group.setOnCheckedChangeListener { rGroup, checkedId ->
+            val radioB: View = rGroup.findViewById(checkedId)
             buttonPosition = rGroup.indexOfChild(radioB)
         }
 
         custom_button.setOnClickListener {
-            if (radioGroup.checkedRadioButtonId == -1) {
+            if (radio_group.checkedRadioButtonId == -1) {
                 radioChecker()
             } else {
                 custom_button.buttonClicked()
