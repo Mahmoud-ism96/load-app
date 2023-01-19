@@ -18,6 +18,8 @@ class LoadingButton @JvmOverloads constructor(
     private var heightSize = 0
     private var buttonColor = 0
     private var text = ""
+    private var loadingColor = 0
+    private var circleColor = 0
 
     private val valueAnimator = ValueAnimator()
 
@@ -25,9 +27,6 @@ class LoadingButton @JvmOverloads constructor(
         when (new) {
             ButtonState.Loading -> {
                 ValueAnimator.ofInt(0, 1000).apply {
-                    addUpdateListener {
-                        invalidate()
-                    }
                     duration = 3000
                     doOnStart {
                         isEnabled = false
@@ -65,10 +64,10 @@ class LoadingButton @JvmOverloads constructor(
     init {
         isClickable = true
         context.withStyledAttributes(attrs, R.styleable.LoadingButton) {
-            buttonColor = getColor(
-                R.styleable.LoadingButton_buttonColor, 0
-            )
+            buttonColor = getColor(R.styleable.LoadingButton_buttonColor, 0)
             text = getString(R.styleable.LoadingButton_text).toString()
+            loadingColor = getColor(R.styleable.LoadingButton_loadingColor, 0)
+            circleColor = getColor(R.styleable.LoadingButton_circleColor, 0)
         }
     }
 
@@ -82,6 +81,8 @@ class LoadingButton @JvmOverloads constructor(
         canvas?.drawText(
             text, textXPos!!.toFloat(), textYPos!!.toFloat(), paint
         )
+
+
     }
 
     override fun performClick(): Boolean {
