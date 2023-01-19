@@ -18,6 +18,8 @@ import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import com.udacity.util.sendNotification
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -38,7 +40,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        createChannel(getString(R.string.loadapp_channel_id), getString(R.string.loadapp_channel_name))
+        createChannel(
+            getString(R.string.loadapp_channel_id),
+            getString(R.string.loadapp_channel_name)
+        )
+
+        notificationManager = ContextCompat.getSystemService(
+            this, NotificationManager::class.java
+        ) as NotificationManager
 
         radioGroup = findViewById<RadioGroup>(R.id.radio_group)
 
@@ -70,8 +79,9 @@ class MainActivity : AppCompatActivity() {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
 
             if (downloadID == id) {
-                Log.i("MainActivity","Download ID: "+id)
+                Log.i("MainActivity", "Download ID: " + id)
                 custom_button.completeLoading()
+                sendNotification()
             }
         }
     }
@@ -117,5 +127,11 @@ class MainActivity : AppCompatActivity() {
             )
             notificationManager.createNotificationChannel(notificationChannel)
         }
+    }
+
+    private fun sendNotification() {
+        notificationManager.sendNotification(
+            this.getText(R.string.notification_description).toString(), this
+        )
     }
 }

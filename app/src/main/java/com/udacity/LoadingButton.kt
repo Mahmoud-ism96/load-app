@@ -2,7 +2,6 @@ package com.udacity
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -11,9 +10,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
-import androidx.core.content.ContextCompat
 import androidx.core.content.withStyledAttributes
-import com.udacity.util.sendNotification
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
@@ -32,9 +29,7 @@ class LoadingButton @JvmOverloads constructor(
 
     private val valueAnimator = ValueAnimator.ofInt(0, 1000)
 
-    val notificationManager = ContextCompat.getSystemService(
-        context, NotificationManager::class.java
-    ) as NotificationManager
+
 
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
         when (new) {
@@ -52,9 +47,7 @@ class LoadingButton @JvmOverloads constructor(
                 valueAnimator.doOnEnd {
                     buttonState = ButtonState.Completed
                     loadingProgress = 0
-                    notificationManager.sendNotification(
-                        context.getText(R.string.notification_description).toString(), context
-                    )
+
                 }
                 valueAnimator.start()
             }
