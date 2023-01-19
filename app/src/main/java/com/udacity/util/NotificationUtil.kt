@@ -14,7 +14,6 @@ private const val NOTIFICATION_ID = 0
 fun NotificationManager.sendNotification(
     messageBody: String, applicationContext: Context, fileName: String, status: String
 ) {
-
     val detailIntent = Intent(applicationContext, DetailActivity::class.java)
     detailIntent.putExtra("fileName", fileName)
     detailIntent.putExtra("status", status)

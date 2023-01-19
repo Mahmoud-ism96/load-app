@@ -3,7 +3,6 @@ package com.udacity
 import android.app.DownloadManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -11,10 +10,10 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.udacity.util.sendNotification
 import kotlinx.android.synthetic.main.activity_main.*
@@ -26,10 +25,9 @@ class MainActivity : AppCompatActivity() {
     private var downloadID: Long = 0
 
     private lateinit var notificationManager: NotificationManager
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var action: NotificationCompat.Action
 
     private var buttonPosition: Int = 0
+    private var selectedPosition: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +50,7 @@ class MainActivity : AppCompatActivity() {
                 radioChecker()
             } else {
                 custom_button.buttonClicked()
+                selectedPosition = buttonPosition
                 when (buttonPosition) {
                     0 -> download(GLIDE_URL)
                     1 -> download(LOADAPP_URL)
@@ -66,9 +65,17 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
 
+            val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+            val query = DownloadManager.Query()
+            val c = downloadManager.query(query)
+
+            if(c.moveToFirst())
+            Log.i("MainActivity","Queue:"+c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS)))
+
+
             if (downloadID == id) {
                 custom_button.completeLoading()
-                when (buttonPosition) {
+                when (selectedPosition) {
                     0 -> sendNotification(getString(R.string.glide_title), "Success")
                     1 -> sendNotification(getString(R.string.loadapp_title), "Success")
                     2 -> sendNotification(getString(R.string.retrofit_title), "Success")
@@ -94,7 +101,6 @@ class MainActivity : AppCompatActivity() {
             "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
         private const val RETROFIT_URL =
             "https://github.com/square/retrofit/archive/refs/heads/master.zip"
-        private const val CHANNEL_ID = "channelId"
     }
 
     private fun radioChecker() {
