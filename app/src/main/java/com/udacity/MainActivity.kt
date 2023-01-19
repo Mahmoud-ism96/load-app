@@ -10,6 +10,7 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +28,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var action: NotificationCompat.Action
     private lateinit var radioGroup: RadioGroup
 
+    private var buttonPosition: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -36,13 +39,22 @@ class MainActivity : AppCompatActivity() {
 
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
+        radioGroup.setOnCheckedChangeListener { rGroup, checkedId ->
+            val radioBtnID = rGroup.checkedRadioButtonId
+            val radioB: View = rGroup.findViewById(radioBtnID)
+            buttonPosition = rGroup.indexOfChild(radioB)
+        }
+
         custom_button.setOnClickListener {
-            Log.i("MainActivity", "Button Clicked")
             if (radioGroup.checkedRadioButtonId == -1) {
                 radioChecker()
             } else {
                 custom_button.buttonClicked()
-                download()
+                when (buttonPosition) {
+                    0 -> download(GLIDE_URL)
+                    1 -> download(LOADAPP_URL)
+                    2 -> download(RETROFIT_URL)
+                }
             }
 
         }
@@ -54,7 +66,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun download() {
+    private fun download(URL: String) {
+        Log.i("MainActivity", "" + URL)
         val request = DownloadManager.Request(Uri.parse(URL)).setTitle(getString(R.string.app_name))
             .setDescription(getString(R.string.app_description)).setRequiresCharging(false)
             .setAllowedOverMetered(true).setAllowedOverRoaming(true)
@@ -65,8 +78,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val URL =
+        private const val GLIDE_URL =
+            "https://github.com/bumptech/glide/archive/refs/heads/master.zip"
+        private const val LOADAPP_URL =
             "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
+        private const val RETROFIT_URL =
+            "https://github.com/square/retrofit/archive/refs/heads/master.zip"
         private const val CHANNEL_ID = "channelId"
     }
 
