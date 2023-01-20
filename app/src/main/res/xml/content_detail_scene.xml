@@ -3,21 +3,64 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <Transition
+        app:autoTransition="animateToEnd"
         app:constraintSetEnd="@+id/end"
-        app:constraintSetStart="@id/start"
-        app:duration="1000">
-        <OnClick
-            app:clickAction="toggle"
-            app:targetId="@id/ok_button" />
-    </Transition>
-
-    <!--    <Transition-->
-    <!--        app:constraintSetStart="@+id/start"-->
-    <!--        app:constraintSetEnd="@+id/end"-->
-    <!--        app:autoTransition="animateToEnd" />-->
+        app:duration="600"
+        app:constraintSetStart="@+id/start" />
 
     <ConstraintSet android:id="@+id/start">
 
+        <Constraint
+            android:id="@+id/file_name_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_large"
+            android:paddingEnd="@dimen/margin_normal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:translationY="-100dp" />
+        <Constraint
+            android:id="@+id/status_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_large"
+            app:layout_constraintBaseline_toBaselineOf="@+id/status"
+            app:layout_constraintStart_toStartOf="parent"
+            android:translationY="-100dp" />
+        <Constraint
+            android:id="@+id/ok_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_normal"
+            android:layout_marginEnd="@dimen/margin_normal"
+            android:layout_marginBottom="@dimen/margin_large"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:translationY="80dp" />
+        <Constraint
+            android:id="@+id/file_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_normal"
+            android:layout_marginEnd="@dimen/margin_normal"
+            android:paddingBottom="@dimen/margin_normal"
+            app:layout_constraintBaseline_toBaselineOf="@+id/file_name_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/file_name_title"
+            android:translationY="-100dp" />
+        <Constraint
+            android:id="@+id/status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/margin_small"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/file_name"
+            app:layout_constraintTop_toBottomOf="@+id/file_name"
+            android:translationY="-100dp" />
+    </ConstraintSet>
+    <ConstraintSet android:id="@+id/end">
         <Constraint
             android:id="@+id/file_name_title"
             android:layout_width="wrap_content"
@@ -38,8 +81,8 @@
             android:id="@+id/ok_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_large"
-            android:layout_marginEnd="@dimen/margin_large"
+            android:layout_marginStart="@dimen/margin_normal"
+            android:layout_marginEnd="@dimen/margin_normal"
             android:layout_marginBottom="@dimen/margin_large"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -59,41 +102,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginVertical="@dimen/margin_small"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/file_name"
-            app:layout_constraintTop_toBottomOf="@+id/file_name" />
-    </ConstraintSet>
-    <ConstraintSet android:id="@+id/end">
-        <Constraint
-            android:id="@+id/file_name_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-        <Constraint
-            android:id="@+id/status_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBaseline_toBaselineOf="@+id/status"
-            app:layout_constraintStart_toStartOf="parent" />
-        <Constraint
-            android:id="@+id/ok_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-        <Constraint
-            android:id="@+id/file_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBaseline_toBaselineOf="@+id/file_name_title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/file_name_title" />
-        <Constraint
-            android:id="@+id/status"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/file_name"
             app:layout_constraintTop_toBottomOf="@+id/file_name" />
